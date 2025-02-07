@@ -1,0 +1,353 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+
+#upNum{
+  margin:0 10px;
+}
+
+#app h1{
+  color:#333;
+  margin-bottom:1rem;
+}
+
+.counter{
+  margin-top:2rem;
+  padding:1rem;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+
+button{
+  background:#4CAF50;
+  border:none;
+  color:rgb(0,0,0,);
+  padding:15px 32px;
+  text-align:center;
+  text-decoration:none;
+  display:inline-block;
+  font-size:16px;
+  margin:4px 2px;
+  cursor:pointer;
+  border-radius:8px;
+}
+
+button:hover{
+  background:#45a049;
+}
+
+
+/*お問い合わせフォームcss*/
+form{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  padding:1rem;
+  border:solid 1px #ccc;
+  border-radius:8px;
+}
+
+label{
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+
+input{
+  padding:0.5rem;
+  border:1px solid #ccc;
+  border-radius:4px;
+  font-size:1rem;
+}
+
+button.button-submit{
+  background:#2196F3;
+  color:rgb(0,0,0);
+  padding:0.5rem 1rem;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:1rem;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+  transition:all 0.3s ease;
+}
+
+
+button.button-submit:hover{
+  background:#197602;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  transform:translateY(-2px);
+}
+
+textarea{
+  padding:0.5rem;
+  border:solid 1px #ccc;
+  border-radius:4px;
+  font-size:1rem;
+  min-height: 100px;
+  font-family:inherit
+}
+
+.error{
+  color:red;
+  font-size:0.875rem;
+  margin-top:0.25rem;
+}
+
+/* 商品リストのCSS */
+.product-list {
+  width:90vw;
+  max-width:1400px;
+  margin-left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction: column;
+  gap:2rem;
+}
+
+/* 商品アイテムのスタイル */
+.product-item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:2rem;
+  border:solid 1px #ccc;
+  border-radius:12px;
+  background:#fff;
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,0.1));
+  margin:0 auto;
+  width:60%;/**/
+  max-width:800px;
+}
+
+.product-list h2{
+  text-align:center;
+  margin-bottom:2rem;
+  padding:0 2rem;
+  margin-left:6%;/*左側の余白を追加*/
+  /* product-itemと同じ幅になる様に調整 */
+  width:80%;
+  max-width:1200px;
+}
+
+/* 商品情報のスタイル */
+.product-info {
+  flex:1;
+  max-width:800px;
+
+}
+
+.product-info h3{
+  margin:0 0 0 0.8rem 0;
+}
+
+/* 在庫の状態を色で表示 */
+.in-stock {
+  color:#2196F3;
+}
+
+.out-of-stock {
+  color:#ff4444;
+}
+
+/* お気に入りボタン */
+button.favorite {
+  background:none;
+  border:none;
+  font-size:2rem;
+  cursor:pointer;
+  padding:0.5rem;
+  color:#666;
+}
+
+/* お気に入り状態のcss */
+button.favorite.active{
+  color:#FFD700;
+}
+
+/* お気に入りの数 */
+.favorite-count {
+  margin-top:1.5rem;
+  padding:1rem;
+  background:#f5f5f5;
+  border-radius:8px;
+  text-align:right;
+  max-width:1200px;
+  margin:0 auto;
+
+
+}
+
+.navs{
+  position:relative;
+}
+
+.first{
+  position:absolute;
+  top:0;
+
+}
+
+.icon-style{
+  position:absolute;
+  top:0;
+  margin-top:11px;
+  margin-left:3px;
+  width:28px;
+}
+
+.buy-count{
+  position:absolute;
+  top:0;
+  z-index:2;
+  margin-top:11px;
+  margin-left:10.5px;
+  font-weight:900;
+  color:gold;
+  font-size:20px;
+  filter:
+        drop-shadow(0px 2px 1px darkblue)
+        drop-shadow(1px -1px 1px darkblue);
+}
+
+.non{
+  pointer-events: none;
+  background:darkgray;
+}
+
+.timer {
+  padding:1rem;
+  margin-bottom:2rem;
+  background:#f5f5f5;
+  border-radius:8px;
+  text-align:center;
+}
+
+.user-profile {
+  padding:1rem;
+  border:solid 1px #ccc;
+  border-radius:8px;
+}
+
+.user-info {
+  margin-top:1rem;
+}
+
+.errors{
+  color:#ff4444;
+  padding:1rem;
+  border:solid 1px #ff4444;
+  border-radius:8px;
+}
+
+/* ユーザーリスト */
+.data-list {
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+
+.list-item{
+  padding:0.5rem;
+  border:solid 1px #eee;
+  border-radius:4px;
+}
+
+/* Button Style */
+.btn{
+  padding:0.5rem 1rem;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-small{padding:0.25rem 0.5rem;font-size:0.875rem;}
+.btn-medium{padding:0.5rem 1rem;font-size:1rem;}
+.btn-large{padding:0.75rem 1.5rem;font-size:1.125rem}
+
+.btn-loading {
+  background:#ccc;
+  cursor:not-allowed;
+}
+
+.btn-success {
+  background:#4CAF50;
+  color:white;
+}
+
+.btn-error {
+  background:#f44336;
+  color:white;
+}
+
+.app{
+  /*max-width:800px;*/
+  margin:0 auto;
+  padding:2rem;
+}
+
+section{
+  margin:2rem 0;
+  padding:1rem;
+  border:solid 1px #ccc;
+  border-radius:8px;
+}
+
+/* User Card Styles */
+.user-card{
+  padding:1rem;
+  border:solid 1px #ddd;
+  border-radius:4px;
+  margin-bottom:1rem;
+}
+
+
+.user-card.selected {
+  border-color:#2196F3;
+  background:#e3f2fd;
+}
+
+
