@@ -12,6 +12,7 @@ import StatusButton, { ButtonStatus } from './components/StatusButton'; // `Butt
 import CounterDemo from './components/CouterDemo';
 import CustomHookDemo from './components/CustomHookDemo';
 import localforage from 'localforage';
+import Todo from './todo';//Todoコンポーネントをインポート
 
 
 
@@ -191,6 +192,8 @@ function App() {
   }
   
   return (
+    <>
+    <Todo /> {/* Todoコンポーネントをレンダリング */}
     <Router>
       <Routes>
         {/* ホームページ */}
@@ -330,6 +333,7 @@ function App() {
         <Route path="/custom-hook-demo" element={<CustomHookDemo />} />
       </Routes>
     </Router>
+    </>
     
   )
 }
