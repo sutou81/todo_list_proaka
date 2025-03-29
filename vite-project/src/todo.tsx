@@ -4,6 +4,8 @@ import { useState } from "react";
 type Todo = {
   content: string; //プロパティ content は文字列型
   readonly id: number;
+  completed_flg: boolean;//タスクの完了/未完了を判定する
+  delete_flg: boolean;//削除に関するフラグ
 }
 
 //Todo コンポーネントの定義
@@ -12,6 +14,49 @@ const Todo:React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);//"Todo(typeで設定した)"の配列を保持するステート
   const [text, setText] = useState('');//フォーム入力のためのステート
   const [nextId, setNextId] = useState(1) //次の "Todo" のIDを保持するステート
+
+  const handleRemove = (id: number, delete_flg: boolean) => {
+    setTodos((todos) => {
+      /*mapの以下のコードは
+        削除ボタンを押したidと既存のタスクの中のid
+        が一致した場合にdelete_flgの値を更新する。
+        必要な部分を更新したら、
+        更新済みの全要素を作り、更新済みの全オブジェクトをsetTodosに格納する
+        ことで、useStateによりtodosが今回の更新を反映されたものへと変更が加味される
+
+       */
+      const newTodos = todos.map((todo) => {
+        if(todo.id === id) {
+          /*以下の[delet_flgの部分は、!delete_flgではないのか？]に関する疑問
+            →このhandleRemoveを実行する際に引き渡す引数の時点で
+            !todo.delete_flgの様に渡していることで、以下の様に
+            delet_flgとして一見変化がない様に見えても、反映される
+          */
+          return {...todo, delete_flg}
+        }
+        return todo;
+      });
+
+      return newTodos;
+    })
+  };
+
+  /*どの todo がチェックされたのかを特定するために id と completed_flg 
+    プロパティの値を引数として受け取ります。その後todo 
+    オブジェクトの completed_flg プロパティを更新します。
+   */
+  const handleCheck = (id: number, completed_flg: boolean) => {
+    setTodos((todos) => { //配列型に格納されたタスクを1つずつ取り出す
+      const newTodos = todos.map((todo) => {//一つずつ取り出した各要素を取り出してる
+        if (todo.id === id) { //checkboxにチェックしたら、completed_flgの値を変える
+          return { ...todo, completed_flg }
+        }
+        return todo;
+      });
+
+      return newTodos
+    })
+  }
 
   const handleEdit = (id:number, value:string) => {
     /*
@@ -64,6 +109,10 @@ const Todo:React.FC = () => {
     const newTodo: Todo = {
       content: text, //text ステートの値をcontent プロパティへ
       id:nextId,
+      //初期値は false
+      completed_flg: false,
+      //初期値は false
+      delete_flg: false,//タスク作成時点においてはfalse
     };
     /** 
      * 更新前の todos ステートを元に
@@ -103,16 +152,28 @@ const Todo:React.FC = () => {
         <input type="submit" value="追加" /> 
       </form>
       <ul>
-        {todos.map((todo) => (
+        {todos.map((todo) => {
+          return(
           //key 属性: 各リスト項目に一意の識別子を設定し、React が効率的に変更を追跡できるようにします。
-          <li key={todo.id}>
-            <input 
-              type="text"
-              value={todo.content}
-              onChange= {(e) => handleEdit(todo.id, e.target.value) }
-            />
-          </li>//todoのリストを表示
-        ))}
+            <li key={todo.id}>
+              <input 
+                type="checkbox" 
+                checked={todo.completed_flg}
+                // 呼び出し側で checked フラグを反転させる
+                onChange={() => handleCheck(todo.id, !todo.completed_flg)}
+              />
+              <input 
+                type="text"
+                value={todo.content}
+                disabled={todo.completed_flg}
+                onChange= {(e) => handleEdit(todo.id, e.target.value) }
+              />
+              <button onClick={() => handleRemove(todo.id, !todo.delete_flg)}>
+                {todo.delete_flg ? '復元' : '削除'}
+              </button>
+            </li>//todoのリストを表示
+          )
+        })}
       </ul>
     </div>
   )

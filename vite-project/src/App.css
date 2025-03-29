@@ -351,4 +351,18 @@ section{
   background:#e3f2fd;
 }
 
+h3.fadeout{
+  display:block;
+  animation: fadeout 3s ease-in-out 5s forwards;
+}
+
+@keyframes fadeout {
+  0%{
+    opacity:1;
+  }
+  100%{
+    opacity:0;
+    display:none;
+  }
+}
 

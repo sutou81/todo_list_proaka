@@ -14,10 +14,11 @@ function CustomHookDemo() {
   //一時的な初期値 ※<UserFormはカスタムフックではなく上記の🌞の印のinterfaceで設定した方のUserForm型注釈として活用
   /*localforage追加で以下のコードを変更 
     const [storedUser, setStoredUser] = useState<UserForm>({
-      name: '',
+      name: '',同じメールアドレスの登録があります
       email: ''
     });
   */
+  const [error_msg, setErrorMsg] = useState('')
  // ローカルストレージからのデータ取得
   const [storedUsers, setStoredUsers] =useState<UserForm[]>([]);
   //localforageの追加によって追加されたコード
@@ -32,8 +33,8 @@ function CustomHookDemo() {
     簡潔的には
     ✨useEffect は、レンダリング後に実行される副作用（サーバー通信、イベントリスナー設定、外部データ取得など）を処理するための React フック。
     通常、画面表示に即座に影響を与えない処理（非同期通信、DOM操作、サーバー接続など）を実装する際に使用する。✨
-
   */
+
   useEffect(() => {
     const fetchStoredUser = async () => {
       try {
@@ -105,6 +106,7 @@ function CustomHookDemo() {
         setStoredUsers(updatedUsers)// メモリ上の状態を更新
       }else{
         console.log("同じメールアドレスの登録があります。")
+        setErrorMsg('同じメールアドレスの登録があります。')
       }
       /*
         ・await は async 関数の中でしか使えない
@@ -141,6 +143,9 @@ function CustomHookDemo() {
     <div className="custom-hook-demo">
       <section>
         <h2>フォーム</h2>
+        {error_msg && (
+          <h3 className="error fadeout">{error_msg}</h3>
+        )}
         <form onSubmit={form.handleSubmit}>
           <div>
             <label>

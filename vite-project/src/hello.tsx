@@ -13,4 +13,4 @@ const Hello: React.FC = () => {
   return <h1>Hellow.</h1>
 };
 
-export default Hello;
+export default Hello
