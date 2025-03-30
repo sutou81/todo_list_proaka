@@ -8,12 +8,54 @@ type Todo = {
   delete_flg: boolean;//削除に関するフラグ
 }
 
+//以下のコードの詳細はテキストReact_チュートリアル_4参照
+type Filter = 'all' | 'completed' | 'unchecked' | 'delete'
+
 //Todo コンポーネントの定義
 //React.FC→変数にコンポーネントを格納する時のやりかた
 const Todo:React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);//"Todo(typeで設定した)"の配列を保持するステート
   const [text, setText] = useState('');//フォーム入力のためのステート
   const [nextId, setNextId] = useState(1) //次の "Todo" のIDを保持するステート
+  //上記で設定したtype Filterの各々の値が状況に応じて格納される。
+  const [filter, setFilter] = useState('all')
+
+  
+
+  //フィルタリングされたタスクリストを取得する関数
+  const getFilteredTodos = () => {
+    /*
+      const [filter, setFilter] = useState('all')
+      でセレクトボックスの選択値が更新されるたびにその値がfilterに格納される
+      以下のswitchでは選択された、セレクトボックスの値によって処理を分岐
+    */
+    switch(filter) {
+      case 'completed':
+        //完了済み **かつ** 削除されていないタスクを返す
+        //filter:配列の中から、条件に合致したデータを抽出して、新しい配列を作る
+        /*🎉⭐️filter と map の違い
+          💐filter:「ある条件を満たす要素だけを集めたい」場合に使用する
+          🩷map:すべての要素に何らかの処理を施したい」場合に使用する
+
+          🎆🎈filterは「選択」、mapは「変換」のためのメソッド 🎈🎆
+         */
+        return todos.filter((todo) => todo.completed_flg && !todo.delete_flg);
+      case 'unchecked':
+        //未完了 **かつ** 削除されていないタスクを渡す
+        return todos.filter((todo) => !todo.completed_flg && !todo.delete_flg);
+      case 'delete': 
+        //削除されたタスクを渡す
+        return todos.filter((todo) => todo.delete_flg);
+      default:
+        //削除されていないすべてのタスクを渡す
+        return todos.filter((todo) => !todo.delete_flg);
+    }
+  }
+
+  //セレクタの変化に応じて、filterの値を更新するもの
+  const handleFilterChange = (filter:Filter) => {
+    setFilter(filter);
+  }
 
   const handleRemove = (id: number, delete_flg: boolean) => {
     setTodos((todos) => {
@@ -135,30 +177,68 @@ const Todo:React.FC = () => {
     setText('');
   };
 
+  //物理的に削除する関数
+  const handleEmpty = () => {
+    /*「!todo.delete_flg」のfilterの意味
+     つまり、delete_flgの値がtrueでないものを集めて新しい配列にしている
+     →⭐️削除対処のタスク(delete_flgがtrue)のものを✨除いて✨⭐️新しい配列を作成して
+     setTodosを用い更新している。
+    */
+    setTodos((todos) => todos.filter((todo) => !todo.delete_flg))
+  }
+
+  const isFormDisabled = filter === 'completed' || filter === 'delete'
   return (
     <div>
-      <form 
-        onSubmit={(e) => {
-          e.preventDefault();//フォームのデフォルト動作を防ぐ
-          handleSubmit();//handleSubmit 関数を呼び出す。
-        }} 
-        className="especial"
-      >
-        <input 
-          type="text" 
-          value={text} //フォームの入力値をステートにバインド
-          onChange={(e) => setText(e.target.value)} //入力値が変わった時にステートを更新
-        />
-        <input type="submit" value="追加" /> 
-      </form>
+      <section className="display-select">
+        {/* 下記のonChangeのコードについて
+          「as」を使う意味
+          本来は as型 を使わずに、「値:型（型注釈）」で自然に型が合うように書く のがベスト
+          asは、値 as 型
+          「値と型が多少違くても型として一致してることにしてという、
+          型注釈よりもゆるい設定の仕方」
+         */}
+        <select defaultValue="all" onChange={(e) => handleFilterChange(e.target.value as Filter)}>
+          <option value="all">すべてのタスク</option>
+          <option value="completed">完了したタスク</option>
+          <option value="unchecked">現在のタスク</option>
+          <option value="delete">ごみ箱</option>
+        </select>
+      </section>
+      {/* フィルターが、'delete' の時は「ごみ箱を空にする」ボタンを表示*/}
+      {filter === 'delete' ? (
+        <button onClick={handleEmpty}>
+          ごみ箱を空にする
+        </button>
+      ) : (
+        //フィルターが’completed'でなければ Todo 入力フォームを表示
+        filter !== 'completed' && (
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();//フォームのデフォルト動作を防ぐ
+              handleSubmit();//handleSubmit 関数を呼び出す。
+            }} 
+            className="especial"
+          >
+            <input 
+              type="text" 
+              value={text} //フォームの入力値をステートにバインド
+              disabled={isFormDisabled}
+              onChange={(e) => setText(e.target.value)} //入力値が変わった時にステートを更新
+            />
+            <button type="submit" disabled={isFormDisabled}>追加</button>
+          </form>
+        )
+      )}
       <ul>
-        {todos.map((todo) => {
+        {getFilteredTodos().map((todo) => {
           return(
           //key 属性: 各リスト項目に一意の識別子を設定し、React が効率的に変更を追跡できるようにします。
             <li key={todo.id}>
               <input 
                 type="checkbox" 
                 checked={todo.completed_flg}
+                disabled={isFormDisabled}
                 // 呼び出し側で checked フラグを反転させる
                 onChange={() => handleCheck(todo.id, !todo.completed_flg)}
               />
