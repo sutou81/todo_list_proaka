@@ -82,6 +82,7 @@ button:hover{
 /*お問い合わせフォームcss*/
 form{
   display:flex;
+  width:100%;
   flex-direction:column;
   gap:1rem;
   padding:1rem;
@@ -366,6 +367,7 @@ h3.fadeout{
   }
 }
 
-.display-select{
-  text-align:left;
+section.display-select{
+  text-align:center;
+  margin-bottom:0;
 }
