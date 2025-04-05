@@ -261,6 +261,7 @@ const Todo:React.FC = () => {
   const isFormDisabled = filter === 'completed' || filter === 'delete'
   return (
     <div className="todo-container">
+      {/* localforageをリセットするボタン */}
       <button onClick={handleLocalForageRemove}>localforage消去</button>
       <section className="display-select">
         {/* 下記のonChangeのコードについて
