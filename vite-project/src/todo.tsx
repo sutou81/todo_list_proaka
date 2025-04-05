@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import localforage from "localforage";
+
 
 //"Todo"型の定義をコンポーネントの外で行います
 type Todo = {
@@ -20,7 +22,25 @@ const Todo:React.FC = () => {
   //上記で設定したtype Filterの各々の値が状況に応じて格納される。
   const [filter, setFilter] = useState('all')
 
+  //useEffect フックを使ってコンポーネントのマウント時にデータを取得
+  useEffect(() => {
+    localforage.getItem('todo-20250405').then((values) => {
+      if(values){
+        setTodos(values as Todo[])
+      }
+    })
+  }, []);
+
+  // useEffect フックを使って todos ステートが更新されるたびにデータを保存
+  useEffect(() => {
+    localforage.setItem('todo-20250405', todos)
+  }, [todos])
   
+  const handleLocalForageRemove = () => {
+    localforage.removeItem('todo-20250405').then((values) => {
+      setTodos([])
+    })
+  }
 
   //フィルタリングされたタスクリストを取得する関数
   const getFilteredTodos = () => {
@@ -57,6 +77,54 @@ const Todo:React.FC = () => {
     setFilter(filter);
   }
 
+  //🚩注目🚩以下のジェネリック関数を使って、handleEdit,handleCheck, handleRmoveを統一する。呼び出し側でも
+  /*以下は表は、V extends Todo[K]の解説
+  ✨🌹つまり、V extends Todo[K]の意図はTodoがjavascriptオブジェクトなので以下の様な構成のため
+  →key:value Todo[K]つまり、Vはvalueの型であること、つまり、型注釈をしていしてる✨🌹
+  上記の✨🌹の説明と以下のtype Todoの構成を踏まえて以下の表を参照すること
+  ※参照
+  type Todo = {
+    content: string; //プロパティ content は文字列型
+    readonly id: number;
+    completed_flg: boolean;//タスクの完了/未完了を判定する
+    delete_flg: boolean;//削除に関するフラグ
+  }
+  ※
+    K	          Todo[K]の型	Vの期待される型
+   "content"	  string	    string
+   "id"	        number	    number
+   "delete_flg"	boolean	    boolean
+  */
+  const handleTodo = <K extends keyof Todo, V extends Todo[K]>(
+    id:number,
+    key:K,
+    value: V
+  ) => {
+    setTodos((todos) => {
+      const newTodos = todos.map((todo) => {
+        if (todo.id === id) {
+          return {...todo, [key]:value};
+        }else{
+          return todo;
+        }
+      })
+
+      return newTodos;
+    })
+  }
+
+  //🌟のコード
+  //Todo配列の中から指定されたidのTodoを探して、指定されたプロパティ（key）の値だけを更新して、新しい配列を返す関数
+  const updateTodo =<T extends keyof Todo>(todos:Todo[], id:number, key: T, value:Todo[T]): Todo[] => {
+    return todos.map((todo) => {
+      if(todo.id === id) {
+        return {...todo, [key]:value}
+      }
+      return todo;
+    })
+  }
+
+  //🌕これを上記の//🌟のコードを使い変更→このコード🌕と以下のコード🌕はジェネリック関数上記の🌟を使い簡易化できる
   const handleRemove = (id: number, delete_flg: boolean) => {
     setTodos((todos) => {
       /*mapの以下のコードは
@@ -82,13 +150,14 @@ const Todo:React.FC = () => {
       return newTodos;
     })
   };
-
+  
+  //🌕これを上記の//🌟のコードを使い変更→このコード🌕と以下のコード🌕はジェネリック関数上記の🌟を使い簡易化できる
   /*どの todo がチェックされたのかを特定するために id と completed_flg 
     プロパティの値を引数として受け取ります。その後todo 
     オブジェクトの completed_flg プロパティを更新します。
    */
   const handleCheck = (id: number, completed_flg: boolean) => {
-    setTodos((todos) => { //配列型に格納されたタスクを1つずつ取り出す
+    /*setTodos((todos) => { //配列型に格納されたタスクを1つずつ取り出す
       const newTodos = todos.map((todo) => {//一つずつ取り出した各要素を取り出してる
         if (todo.id === id) { //checkboxにチェックしたら、completed_flgの値を変える
           return { ...todo, completed_flg }
@@ -97,9 +166,11 @@ const Todo:React.FC = () => {
       });
 
       return newTodos
-    })
+    })*/
+   setTodos((todos) => updateTodo(todos,id, 'completed_flg', completed_flg))
   }
 
+  //🌕これを上記の//🌟のコードを使い変更→このコード🌕と以下のコード🌕はジェネリック関数上記の🌟を使い簡易化できる
   const handleEdit = (id:number, value:string) => {
     /*
      setTodosはuseStateに保存してあるものの中で該当するid
@@ -189,7 +260,8 @@ const Todo:React.FC = () => {
 
   const isFormDisabled = filter === 'completed' || filter === 'delete'
   return (
-    <div>
+    <div className="todo-container">
+      <button onClick={handleLocalForageRemove}>localforage消去</button>
       <section className="display-select">
         {/* 下記のonChangeのコードについて
           「as」を使う意味
@@ -240,15 +312,15 @@ const Todo:React.FC = () => {
                 checked={todo.completed_flg}
                 disabled={isFormDisabled}
                 // 呼び出し側で checked フラグを反転させる
-                onChange={() => handleCheck(todo.id, !todo.completed_flg)}
+                onChange={() => handleTodo(todo.id,  'completed_flg', !todo.completed_flg)}
               />
               <input 
                 type="text"
                 value={todo.content}
                 disabled={todo.completed_flg}
-                onChange= {(e) => handleEdit(todo.id, e.target.value) }
+                onChange= {(e) => handleTodo(todo.id, 'content', e.target.value) }
               />
-              <button onClick={() => handleRemove(todo.id, !todo.delete_flg)}>
+              <button onClick={() => handleTodo(todo.id, 'delete_flg', !todo.delete_flg)}>
                 {todo.delete_flg ? '復元' : '削除'}
               </button>
             </li>//todoのリストを表示
