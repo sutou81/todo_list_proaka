@@ -1,0 +1,3 @@
+[submodule "vite-project/todo_list_server_text"]
+	path = vite-project/todo_list_server_text
+	url = https://github.com/nishinotakaya/todo_list_server_text.git
